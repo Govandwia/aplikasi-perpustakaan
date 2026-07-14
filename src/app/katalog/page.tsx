@@ -10,6 +10,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Search, Plus, Edit, Trash2, BookOpen } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 function KatalogContent() {
   const [books, setBooks] = useState<Buku[]>([]);
@@ -33,6 +35,7 @@ function KatalogContent() {
   const [formData, setFormData] = useState({
     isbn: "", judul: "", pengarang: "", penerbit: "", tahun_terbit: "", kategori: "", klasifikasi: ""
   });
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
   const loadBooks = async () => {
     setIsLoading(true);
@@ -95,26 +98,35 @@ function KatalogContent() {
 
       if (editingBook) {
         await updateBook({ id: editingBook.id, ...payload });
+        toast.success("Buku berhasil diperbarui!");
       } else {
         await addBook(payload);
+        toast.success("Buku baru berhasil ditambahkan!");
       }
       
       setIsDialogOpen(false);
       loadBooks();
     } catch (err) {
       console.error("Gagal menyimpan buku", err);
-      alert("Gagal menyimpan data buku.");
+      toast.error("Gagal menyimpan data buku. Pastikan koneksi internet stabil.");
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (confirm("Apakah Anda yakin ingin menghapus buku ini?")) {
+  const handleDelete = (id: number) => {
+    setConfirmDeleteId(id);
+  };
+
+  const confirmDelete = async () => {
+    if (confirmDeleteId !== null) {
       try {
-        await deleteBook(id);
+        await deleteBook(confirmDeleteId);
+        toast.success("Buku berhasil dihapus!");
         loadBooks();
       } catch (err) {
         console.error("Gagal menghapus buku", err);
-        alert("Gagal menghapus buku. Pastikan tidak ada transaksi aktif untuk buku ini.");
+        toast.error("Gagal menghapus buku. Pastikan tidak ada transaksi aktif untuk buku ini.");
+      } finally {
+        setConfirmDeleteId(null);
       }
     }
   };
@@ -275,6 +287,17 @@ function KatalogContent() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        isOpen={confirmDeleteId !== null}
+        title="Hapus Buku"
+        description="Apakah Anda yakin ingin menghapus buku ini secara permanen? Data yang sudah dihapus tidak dapat dikembalikan."
+        confirmText="Ya, Hapus"
+        cancelText="Batal"
+        isDestructive={true}
+        onConfirm={confirmDelete}
+        onCancel={() => setConfirmDeleteId(null)}
+      />
     </div>
   );
 }

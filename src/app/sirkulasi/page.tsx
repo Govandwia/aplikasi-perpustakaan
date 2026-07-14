@@ -7,7 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { BookUp, BookDown, Search, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 export default function Sirkulasi() {
   const [activeTab, setActiveTab] = useState<"peminjaman" | "pengembalian">("peminjaman");
@@ -19,6 +22,7 @@ export default function Sirkulasi() {
   const [selectedBookId, setSelectedBookId] = useState("");
   const [namaPeminjam, setNamaPeminjam] = useState("");
   const [kontakPeminjam, setKontakPeminjam] = useState("");
+  const [confirmReturn, setConfirmReturn] = useState<{ id: number, id_buku: number, denda: number, msg: string } | null>(null);
 
   // Pengembalian Search
   const [returnSearch, setReturnSearch] = useState("");
@@ -60,33 +64,28 @@ export default function Sirkulasi() {
 
     const book = books.find(b => b.id.toString() === selectedBookId);
     if (!book || book.status !== 'TERSEDIA') {
-      alert("Buku tidak tersedia!");
+      toast.error("Buku tidak tersedia!");
       return;
     }
-
-    const today = new Date();
-    const tenggat = new Date();
-    tenggat.setDate(today.getDate() + 7); // +7 days
 
     try {
       await addTransaction({
         id_buku: book.id,
         nama_peminjam: namaPeminjam,
         kontak_peminjam: kontakPeminjam || null,
-        tanggal_pinjam: today.toISOString().split('T')[0],
-        tenggat_waktu: tenggat.toISOString().split('T')[0],
+        tanggal_pinjam: new Date().toISOString().split('T')[0],
+        tenggat_waktu: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       });
       
-      // Reset form
       setSelectedBookId("");
       setNamaPeminjam("");
       setKontakPeminjam("");
       
-      alert("Peminjaman berhasil dicatat!");
+      toast.success("Peminjaman berhasil dicatat!");
       loadData();
     } catch (err) {
       console.error("Gagal mencatat peminjaman", err);
-      alert("Gagal mencatat peminjaman.");
+      toast.error("Gagal mencatat peminjaman.");
     }
   };
 
@@ -98,7 +97,7 @@ export default function Sirkulasi() {
     if (hariIni > tenggat) {
       const diffTime = Math.abs(hariIni.getTime() - tenggat.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return diffDays * 1000; // Denda Rp 1.000 per hari
+      return diffDays * 2000; // Denda Rp 2.000 per hari
     }
     return 0;
   };
@@ -108,18 +107,24 @@ export default function Sirkulasi() {
     
     let confirmMessage = `Kembalikan buku "${tx.judul}" dari ${tx.nama_peminjam}?`;
     if (denda > 0) {
-      confirmMessage += `\n\nPERHATIAN: Peminjam terlambat dan dikenakan denda sebesar Rp ${denda.toLocaleString('id-ID')}`;
+      confirmMessage = `Buku ini terlambat dikembalikan. Denda yang harus dibayar: Rp ${denda.toLocaleString('id-ID')}`;
     }
-    
-    if (confirm(confirmMessage)) {
+
+    setConfirmReturn({ id: tx.id, id_buku: tx.id_buku, denda, msg: confirmMessage });
+  };
+
+  const executeReturn = async () => {
+    if (confirmReturn) {
       try {
         const today = new Date().toISOString().split('T')[0];
-        await returnTransaction(tx.id, tx.id_buku, today, denda);
-        alert("Buku berhasil dikembalikan.");
+        await returnTransaction(confirmReturn.id, confirmReturn.id_buku, today, confirmReturn.denda);
+        toast.success("Buku berhasil dikembalikan.");
         loadData();
       } catch (err) {
         console.error("Gagal mengembalikan buku", err);
-        alert("Gagal memproses pengembalian buku.");
+        toast.error("Gagal memproses pengembalian buku.");
+      } finally {
+        setConfirmReturn(null);
       }
     }
   };
@@ -306,6 +311,17 @@ export default function Sirkulasi() {
           </CardContent>
         </Card>
       )}
+
+      <ConfirmDialog
+        isOpen={confirmReturn !== null}
+        title="Pengembalian Buku"
+        description={confirmReturn?.msg || "Konfirmasi pengembalian"}
+        confirmText="Proses Pengembalian"
+        cancelText="Batal"
+        isDestructive={false}
+        onConfirm={executeReturn}
+        onCancel={() => setConfirmReturn(null)}
+      />
     </div>
   );
 }
