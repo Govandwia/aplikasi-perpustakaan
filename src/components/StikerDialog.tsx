@@ -15,7 +15,7 @@ export function StikerDialog({ isOpen, book, onClose }: StikerDialogProps) {
   const printRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = useReactToPrint({
-    content: () => printRef.current,
+    contentRef: printRef,
     documentTitle: `Stiker_${book?.judul || 'Buku'}`,
   });
 
