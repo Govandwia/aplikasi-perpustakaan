@@ -2,7 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Buku } from "@/lib/db";
 import { useRef, useState } from "react";
-import html2canvas from "html2canvas";
+import { toPng } from "html-to-image";
 import Barcode from "react-barcode";
 
 interface StikerDialogProps {
@@ -20,16 +20,16 @@ export function StikerDialog({ isOpen, book, onClose }: StikerDialogProps) {
     
     try {
       setIsDownloading(true);
-      const canvas = await html2canvas(printRef.current, {
-        scale: 3, // Skala 3x agar resolusinya tinggi dan tidak pecah saat diprint
-        backgroundColor: "#ffffff",
+      
+      const dataUrl = await toPng(printRef.current, {
+        pixelRatio: 3,
+        backgroundColor: '#ffffff'
       });
       
       // Convert to image and download
-      const image = canvas.toDataURL("image/png");
       const link = document.createElement("a");
       const safeTitle = book?.judul?.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'buku';
-      link.href = image;
+      link.href = dataUrl;
       link.download = `Stiker_${safeTitle}.png`;
       link.click();
       
