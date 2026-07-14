@@ -1,8 +1,8 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Buku } from "@/lib/db";
-import { useRef } from "react";
-import { useReactToPrint } from "react-to-print";
+import { useRef, useState } from "react";
+import html2canvas from "html2canvas";
 import Barcode from "react-barcode";
 
 interface StikerDialogProps {
@@ -13,11 +13,32 @@ interface StikerDialogProps {
 
 export function StikerDialog({ isOpen, book, onClose }: StikerDialogProps) {
   const printRef = useRef<HTMLDivElement>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
-  const handlePrint = useReactToPrint({
-    contentRef: printRef,
-    documentTitle: `Stiker_${book?.judul || 'Buku'}`,
-  });
+  const handleDownloadImage = async () => {
+    if (!printRef.current) return;
+    
+    try {
+      setIsDownloading(true);
+      const canvas = await html2canvas(printRef.current, {
+        scale: 3, // Skala 3x agar resolusinya tinggi dan tidak pecah saat diprint
+        backgroundColor: "#ffffff",
+      });
+      
+      // Convert to image and download
+      const image = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      const safeTitle = book?.judul?.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'buku';
+      link.href = image;
+      link.download = `Stiker_${safeTitle}.png`;
+      link.click();
+      
+    } catch (error) {
+      console.error("Gagal membuat gambar stiker", error);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   if (!book) return null;
 
@@ -82,9 +103,13 @@ export function StikerDialog({ isOpen, book, onClose }: StikerDialogProps) {
         </div>
 
         <DialogFooter className="mt-4">
-          <Button variant="outline" onClick={onClose}>Tutup</Button>
-          <Button onClick={handlePrint} className="bg-indigo-600 hover:bg-indigo-700 text-white">
-            Cetak Stiker (Print)
+          <Button variant="outline" onClick={onClose} disabled={isDownloading}>Tutup</Button>
+          <Button 
+            onClick={handleDownloadImage} 
+            disabled={isDownloading}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white"
+          >
+            {isDownloading ? "Menyiapkan Gambar..." : "Simpan Gambar (Download)"}
           </Button>
         </DialogFooter>
       </DialogContent>
