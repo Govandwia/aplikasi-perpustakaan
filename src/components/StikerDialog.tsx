@@ -98,6 +98,11 @@ export function StikerDialog({ isOpen, book, onClose }: StikerDialogProps) {
                   <span className="text-base font-bold leading-none" style={{ color: '#0f172a' }}>{authorCode}</span>
                   <span className="text-base font-bold leading-none" style={{ color: '#0f172a' }}>{titleLetter}</span>
                 </div>
+                <div className="flex justify-center items-center gap-2 pb-2 px-2" style={{ backgroundColor: '#ffffff' }}>
+                  <img src="/logo-ugm.png" alt="UGM" style={{ height: '14px', objectFit: 'contain' }} />
+                  <img src="/logo-kkn.png" alt="KKN" style={{ height: '14px', objectFit: 'contain' }} />
+                  <img src="/Logo sorak no background.png" alt="Sorak" style={{ height: '14px', objectFit: 'contain' }} />
+                </div>
               </div>
             </div>
           </div>
