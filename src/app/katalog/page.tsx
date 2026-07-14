@@ -99,7 +99,7 @@ function KatalogContent() {
       };
 
       if (editingBook) {
-        await updateBook({ id: editingBook.id, ...payload });
+        await updateBook({ ...editingBook, ...payload });
         toast.success("Buku berhasil diperbarui!");
       } else {
         await addBook(payload);

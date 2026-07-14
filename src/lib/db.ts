@@ -133,11 +133,12 @@ export async function returnTransaction(id: number, id_buku: number, tanggal_kem
   });
   
   if (txToUpdate) {
-    txToUpdate.status = 'SELESAI';
-    txToUpdate.tanggal_kembali = tanggal_kembali;
-    txToUpdate.denda = denda;
-    txToUpdate.last_updated = Date.now();
-    await setDoc(doc(dbFirebase, TXS_COL, id.toString()), txToUpdate);
+    const tx = txToUpdate as Transaksi;
+    tx.status = 'SELESAI';
+    tx.tanggal_kembali = tanggal_kembali;
+    tx.denda = denda;
+    tx.last_updated = Date.now();
+    await setDoc(doc(dbFirebase, TXS_COL, id.toString()), tx);
   }
   
   const books = await getBooks();
