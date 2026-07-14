@@ -89,8 +89,9 @@ export function StikerDialog({ isOpen, book, onClose }: StikerDialogProps) {
 
               {/* Right Side: Text */}
               <div className="w-[55%] h-full flex flex-col" style={{ backgroundColor: '#ffffff' }}>
-                <div className="border-b text-center py-2 flex items-center justify-center min-h-[1.2cm]" style={{ backgroundColor: '#ffffff', borderColor: '#94a3b8', color: '#0f172a' }}>
-                  <span className="font-bold text-[12px] leading-tight px-2 uppercase tracking-wide">TAMAN BACA MANDIRI BIRU</span>
+                <div className="border-b text-center py-1 flex flex-col items-center justify-center min-h-[1.2cm]" style={{ backgroundColor: '#ffffff', borderColor: '#94a3b8', color: '#0f172a' }}>
+                  <span className="font-bold text-[9px] leading-tight px-2 uppercase tracking-wide">TAMAN BACA</span>
+                  <span className="font-black text-[13px] leading-tight px-2 uppercase tracking-wide">MANDIRI BIRU</span>
                 </div>
                 <div className="flex-1 flex flex-col items-center justify-center gap-1 py-1">
                   <span className="text-base font-bold leading-none" style={{ color: '#0f172a' }}>{klasifikasi}</span>
