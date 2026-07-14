@@ -75,7 +75,6 @@ export function StikerDialog({ isOpen, book, onClose }: StikerDialogProps) {
                   <span className="text-base font-bold text-slate-900 leading-none">{klasifikasi}</span>
                   <span className="text-base font-bold text-slate-900 leading-none">{authorCode}</span>
                   <span className="text-base font-bold text-slate-900 leading-none">{titleLetter}</span>
-                  <span className="text-sm font-bold text-slate-600 leading-none mt-1">c.1</span>
                 </div>
               </div>
             </div>
