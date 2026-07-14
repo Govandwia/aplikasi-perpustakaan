@@ -8,10 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Search, Plus, Edit, Trash2, BookOpen } from "lucide-react";
+import { Search, Plus, Edit, Trash2, BookOpen, Printer } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { StikerDialog } from "@/components/StikerDialog";
 
 function KatalogContent() {
   const [books, setBooks] = useState<Buku[]>([]);
@@ -36,6 +37,7 @@ function KatalogContent() {
     isbn: "", judul: "", pengarang: "", penerbit: "", tahun_terbit: "", kategori: "", klasifikasi: ""
   });
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+  const [stikerBook, setStikerBook] = useState<Buku | null>(null);
 
   const loadBooks = async () => {
     setIsLoading(true);
@@ -218,15 +220,25 @@ function KatalogContent() {
                         {book.status === 'TERSEDIA' ? 'Tersedia' : 'Sedang Dipinjam'}
                       </span>
                     </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button variant="outline" size="icon" className="h-8 w-8 text-blue-600 border-blue-200 hover:bg-blue-50" onClick={() => handleOpenDialog(book)}>
+                    <TableCell className="text-right space-x-2">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="text-slate-500 hover:text-indigo-600 hover:bg-indigo-50"
+                        onClick={() => setStikerBook(book)}
+                        title="Cetak Stiker"
+                      >
+                        <Printer className="w-4 h-4" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="text-slate-500 hover:text-blue-600 hover:bg-blue-50" onClick={() => handleOpenDialog(book)}>
                           <Edit className="w-4 h-4" />
                         </Button>
                         <Button variant="outline" size="icon" className="h-8 w-8 text-red-600 border-red-200 hover:bg-red-50" onClick={() => handleDelete(book.id)}>
                           <Trash2 className="w-4 h-4" />
                         </Button>
-                      </div>
                     </TableCell>
                   </TableRow>
                 ))
@@ -297,6 +309,12 @@ function KatalogContent() {
         isDestructive={true}
         onConfirm={confirmDelete}
         onCancel={() => setConfirmDeleteId(null)}
+      />
+
+      <StikerDialog 
+        isOpen={stikerBook !== null} 
+        book={stikerBook} 
+        onClose={() => setStikerBook(null)} 
       />
     </div>
   );
