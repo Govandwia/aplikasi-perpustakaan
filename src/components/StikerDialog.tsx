@@ -48,17 +48,17 @@ export function StikerDialog({ isOpen, book, onClose }: StikerDialogProps) {
 
         <div className="flex justify-center p-4 bg-slate-100 rounded-md overflow-hidden">
           {/* Printable Area */}
-          <div ref={printRef} className="bg-white border border-slate-400 p-0 m-0 print:border-none" style={{ width: '6cm', height: '3.5cm' }}>
+          <div ref={printRef} className="bg-white border border-slate-400 p-0 m-0 print:border-none overflow-hidden" style={{ width: '8cm', height: '5cm' }}>
             <div className="flex h-full w-full">
               {/* Left Side: Barcode */}
-              <div className="w-[35%] h-full border-r border-slate-300 flex items-center justify-center relative bg-white">
-                <div className="absolute flex flex-col items-center" style={{ transform: 'rotate(-90deg)' }}>
-                  <span className="text-[8px] text-slate-800 mb-0.5 whitespace-nowrap overflow-hidden text-ellipsis max-w-[3cm]">{titleWords}</span>
+              <div className="w-[45%] h-full flex flex-col items-center justify-center relative bg-white border-r border-slate-400">
+                <div className="flex flex-col items-center justify-center" style={{ transform: 'rotate(-90deg)', width: '5cm', height: '100%' }}>
+                  <span className="text-[10px] font-medium text-slate-800 mb-1 whitespace-nowrap overflow-hidden text-ellipsis max-w-[4cm]">{titleWords}</span>
                   <Barcode 
                     value={barcodeValue} 
-                    width={1} 
-                    height={25} 
-                    fontSize={10} 
+                    width={1.2} 
+                    height={35} 
+                    fontSize={11} 
                     margin={0}
                     displayValue={true}
                     background="transparent"
@@ -67,15 +67,15 @@ export function StikerDialog({ isOpen, book, onClose }: StikerDialogProps) {
               </div>
 
               {/* Right Side: Text */}
-              <div className="w-[65%] h-full flex flex-col bg-white">
-                <div className="bg-[#eab308] text-slate-900 text-center py-1 flex items-center justify-center min-h-[1cm]">
-                  <span className="font-bold text-[10px] leading-tight px-1">TAMAN BACA MANDIRI BIRU</span>
+              <div className="w-[55%] h-full flex flex-col bg-white">
+                <div className="bg-white border-b border-slate-400 text-slate-900 text-center py-2 flex items-center justify-center min-h-[1.2cm]">
+                  <span className="font-bold text-[12px] leading-tight px-2 uppercase tracking-wide">TAMAN BACA MANDIRI BIRU</span>
                 </div>
-                <div className="flex-1 flex flex-col items-center justify-center gap-0.5 py-1">
-                  <span className="text-sm font-bold text-slate-800 leading-none">{klasifikasi}</span>
-                  <span className="text-sm font-bold text-slate-800 leading-none">{authorCode}</span>
-                  <span className="text-sm font-bold text-slate-800 leading-none">{titleLetter}</span>
-                  <span className="text-sm font-bold text-slate-800 leading-none">c.1</span>
+                <div className="flex-1 flex flex-col items-center justify-center gap-1 py-1">
+                  <span className="text-base font-bold text-slate-900 leading-none">{klasifikasi}</span>
+                  <span className="text-base font-bold text-slate-900 leading-none">{authorCode}</span>
+                  <span className="text-base font-bold text-slate-900 leading-none">{titleLetter}</span>
+                  <span className="text-sm font-bold text-slate-600 leading-none mt-1">c.1</span>
                 </div>
               </div>
             </div>
