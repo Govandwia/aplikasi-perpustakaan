@@ -9,6 +9,7 @@ export interface Buku {
   penerbit: string | null;
   tahun_terbit: number | null;
   kategori: string | null;
+  klasifikasi: string | null;
   status: 'TERSEDIA' | 'DIPINJAM';
   last_updated: number;
 }

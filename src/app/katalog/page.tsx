@@ -31,7 +31,7 @@ function KatalogContent() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBook, setEditingBook] = useState<Buku | null>(null);
   const [formData, setFormData] = useState({
-    isbn: "", judul: "", pengarang: "", penerbit: "", tahun_terbit: "", kategori: ""
+    isbn: "", judul: "", pengarang: "", penerbit: "", tahun_terbit: "", kategori: "", klasifikasi: ""
   });
 
   const loadBooks = async () => {
@@ -70,16 +70,12 @@ function KatalogContent() {
         pengarang: book.pengarang,
         penerbit: book.penerbit || "",
         tahun_terbit: book.tahun_terbit?.toString() || "",
-        kategori: book.kategori || ""
+        kategori: book.kategori || "",
+        klasifikasi: book.klasifikasi || ""
       });
     } else {
       setEditingBook(null);
-      // Auto-fill ISBN untuk buku baru
-      const dateStr = new Date().toISOString().slice(0,10).replace(/-/g, '');
-      const randomStr = Math.floor(1000 + Math.random() * 9000).toString();
-      const generatedIsbn = `LIB-${dateStr}-${randomStr}`;
-      
-      setFormData({ isbn: generatedIsbn, judul: "", pengarang: "", penerbit: "", tahun_terbit: "", kategori: "" });
+      setFormData({ isbn: "", judul: "", pengarang: "", penerbit: "", tahun_terbit: "", kategori: "", klasifikasi: "" });
     }
     setIsDialogOpen(true);
   };
@@ -93,7 +89,8 @@ function KatalogContent() {
         pengarang: formData.pengarang,
         penerbit: formData.penerbit || null,
         tahun_terbit: formData.tahun_terbit ? parseInt(formData.tahun_terbit) : null,
-        kategori: formData.kategori || null
+        kategori: formData.kategori || null,
+        klasifikasi: formData.klasifikasi || null
       };
 
       if (editingBook) {
@@ -160,7 +157,7 @@ function KatalogContent() {
                 <TableHead className="w-[100px]">ISBN</TableHead>
                 <TableHead>Judul Buku</TableHead>
                 <TableHead>Pengarang</TableHead>
-                <TableHead>Kategori</TableHead>
+                <TableHead>Kategori / Klasifikasi</TableHead>
                 <TableHead className="text-center">Status</TableHead>
                 <TableHead className="text-right">Aksi</TableHead>
               </TableRow>
@@ -190,11 +187,19 @@ function KatalogContent() {
                     <TableCell className="font-medium text-slate-900">{book.judul}</TableCell>
                     <TableCell className="text-slate-600">{book.pengarang}</TableCell>
                     <TableCell>
-                      {book.kategori && (
-                        <span className="px-2.5 py-1 bg-slate-100 text-slate-600 text-xs rounded-full font-medium">
-                          {book.kategori}
-                        </span>
-                      )}
+                      <div className="flex flex-col gap-1 items-start">
+                        {book.kategori && (
+                          <span className="px-2.5 py-1 bg-slate-100 text-slate-600 text-[10px] rounded-full font-medium uppercase tracking-wider">
+                            {book.kategori}
+                          </span>
+                        )}
+                        {book.klasifikasi && (
+                          <span className="px-2.5 py-1 bg-indigo-50 text-indigo-700 text-[10px] rounded-full font-medium tracking-wider border border-indigo-100">
+                            {book.klasifikasi}
+                          </span>
+                        )}
+                        {!book.kategori && !book.klasifikasi && <span className="text-slate-400">-</span>}
+                      </div>
                     </TableCell>
                     <TableCell className="text-center">
                       <span className={`px-2.5 py-1 text-xs rounded-full font-medium ${book.status === 'TERSEDIA' ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>
@@ -255,6 +260,11 @@ function KatalogContent() {
               <div className="space-y-2">
                 <Label htmlFor="kategori">Kategori</Label>
                 <Input id="kategori" value={formData.kategori} onChange={(e) => setFormData({...formData, kategori: e.target.value})} placeholder="Fiksi, Sains, dll" />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="klasifikasi">Klasifikasi Buku</Label>
+                <Input id="klasifikasi" value={formData.klasifikasi} onChange={(e) => setFormData({...formData, klasifikasi: e.target.value})} placeholder="Misal: 004 (Ilmu Komputer)" />
               </div>
             </div>
             
